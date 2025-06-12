@@ -1,0 +1,1 @@
+<x-cards-container :cards="$users ?? []" :title="$title" />
