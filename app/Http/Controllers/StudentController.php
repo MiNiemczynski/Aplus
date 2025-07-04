@@ -34,7 +34,7 @@ class StudentController extends Controller
         $student = auth()->user()->student;
         $subjects = $this->service->getSubjects($request->input("search") ?? "");
         $tests = $this->service->getTests($request->input("search") ?? "");
-        return $this->ajaxOrView($request, 'app.content.student.home', ["subjects" => $subjects, "student" => $student, "tests" => $tests]);
+        return $this->ajaxOrView($request, 'app.content.user.student.home', ["subjects" => $subjects, "student" => $student, "tests" => $tests]);
     }
     public function info(Request $request)
     {
@@ -43,12 +43,12 @@ class StudentController extends Controller
 
         $className = $class["Name"] ?? "Not assigned";
 
-        return $this->ajaxOrView($request, "app.content.student.info", ["student" => $student, "class" => $class]);
+        return $this->ajaxOrView($request, "app.content.user.student.info", ["student" => $student, "class" => $class]);
     }
     public function subject(Request $request, int $subjectId)
     {
         $result = $this->service->getSubject($subjectId);
-        return $this->ajaxOrView($request, "app.subject.student-info", [
+        return $this->ajaxOrView($request, "app.content.subject.student-info", [
             "subject" => $result['subject'],
             "finalGrade" => $result['finalGrade'],
             "grades" => $result['grades']
@@ -62,7 +62,7 @@ class StudentController extends Controller
     public function test(Request $request, int $testId)
     {
         $result = $this->service->getTest($testId);
-        return $this->ajaxOrView($request, "app.content.student.test-info", [
+        return $this->ajaxOrView($request, "app.content.user.student.test-info", [
             "subject" => $result['subject'],
             "test" => $result['test'],
             "date" => $result['date'],
@@ -77,7 +77,7 @@ class StudentController extends Controller
     public function timetable(Request $request)
     {
         $result = $this->service->getTimetable($request->input('offset') ?? 0);
-        return $this->ajaxOrView($request, "app.content.timetable", $result);
+        return $this->ajaxOrView($request, "app.content.misc.timetable", $result);
     }
 
     public function create(Request $request)

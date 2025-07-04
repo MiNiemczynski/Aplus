@@ -30,7 +30,7 @@ class TeacherController extends Controller
     public function home(Request $request)
     {
         $teacher = auth()->user()->teacher;
-        return $this->ajaxOrView($request,'app.content.teacher.home', ["teacher" => $teacher]);
+        return $this->ajaxOrView($request,'app.content.user.teacher.home', ["teacher" => $teacher]);
     }
     public function create(Request $request)
     {

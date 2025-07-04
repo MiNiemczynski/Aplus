@@ -34,7 +34,7 @@ class AdminController extends Controller
     public function home(Request $request)
     {
         $admin = auth()->user();
-        return $this->ajaxOrView($request, 'app.content.admin.home', [
+        return $this->ajaxOrView($request, 'app.content.user.admin.home', [
             "admin" => $admin,
             "subjects" => $this->service->getAllSubjects($request->input("search") ?? ""),
             "classgroups" => $this->service->getAllClassGroups($request->input("search") ?? ""),
@@ -107,7 +107,7 @@ class AdminController extends Controller
     public function users(Request $request)
     {
         $users = $this->service->getAllUsers($request->input("search") ?? "");
-        return $this->ajaxOrView($request, "app.content.users", [
+        return $this->ajaxOrView($request, "app.content.user.users", [
             "actioncards" => [
                 [
                     "title" => "Admins",
@@ -148,50 +148,50 @@ class AdminController extends Controller
     // admin
     public function createAdmin(Request $request)
     {
-        return $this->ajaxOrView($request, "app.content.admin.create");
+        return $this->ajaxOrView($request, "app.content.user.admin.create");
     }
     public function adminDetails(Request $request, int $id)
     {
         $admin = $this->service->getById($id);
-        return $this->ajaxOrView($request, "app.content.admin.create", ["admin" => $admin]);
+        return $this->ajaxOrView($request, "app.content.user.admin.create", ["admin" => $admin]);
     }
     public function admins(Request $request)
     {
         $admins = $this->service->getAllUsers($request->input("search") ?? "")["admins"];
-        return $this->ajaxOrView($request, "app.content.usersgroup", ["users" => $admins, "title" => "Admins"]);
+        return $this->ajaxOrView($request, "app.content.user.usersgroup", ["users" => $admins, "title" => "Admins"]);
     }
     // student
     public function createStudent(Request $request)
     {
         $classgroups = $this->service->getAllClassGroups($request->input("search") ?? "");
-        return $this->ajaxOrView($request, "app.content.student.create", ["classgroups" => $classgroups]);
+        return $this->ajaxOrView($request, "app.content.user.student.create", ["classgroups" => $classgroups]);
     }
     public function studentDetails(Request $request, int $id)
     {
         $studentService = new StudentService();
         $student = $studentService->getById($id);
         $classgroups = $this->service->getAllClassGroups($request->input("search") ?? "");
-        return $this->ajaxOrView($request, "app.content.student.create", ["student" => $student, "classgroups" => $classgroups]);
+        return $this->ajaxOrView($request, "app.content.user.student.create", ["student" => $student, "classgroups" => $classgroups]);
     }
     public function students(Request $request)
     {
         $students = $this->service->getAllUsers($request->input("search") ?? "")["students"];
-        return $this->ajaxOrView($request, "app.content.usersgroup", ["users" => $students, "title" => "Students"]);
+        return $this->ajaxOrView($request, "app.content.user.usersgroup", ["users" => $students, "title" => "Students"]);
     }
     // teacher
     public function createTeacher(Request $request)
     {
-        return $this->ajaxOrView($request, "app.content.teacher.create");
+        return $this->ajaxOrView($request, "app.content.user.teacher.create");
     }
     public function teacherDetails(Request $request, int $id)
     {
         $teacherService = new TeacherService();
         $teacher = $teacherService->getById($id);
-        return $this->ajaxOrView($request, "app.content.teacher.create", ["teacher" => $teacher]);
+        return $this->ajaxOrView($request, "app.content.user.teacher.create", ["teacher" => $teacher]);
     }
     public function teachers(Request $request)
     {
         $teachers = $this->service->getAllUsers($request->input("search") ?? "")["teachers"];
-        return $this->ajaxOrView($request, "app.content.usersgroup", ["users" => $teachers, "title" => "Teachers"]);
+        return $this->ajaxOrView($request, "app.content.user.usersgroup", ["users" => $teachers, "title" => "Teachers"]);
     }
 }
