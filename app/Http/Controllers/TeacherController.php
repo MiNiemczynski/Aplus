@@ -4,12 +4,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\TeacherService;
 use App\Http\Controllers\Controller;
-use App\Models\Teacher;
 
 class TeacherController extends Controller
 {
     private TeacherService $service;
-    private Teacher $teacher;
     public function __construct()
     {
         $this->service = new TeacherService();

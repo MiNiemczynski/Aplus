@@ -2,7 +2,6 @@
 namespace App\Services;
 
 use App\Models\User;
-use App\Models\Student;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Hash;

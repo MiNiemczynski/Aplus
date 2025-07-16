@@ -9,6 +9,7 @@ use Illuminate\View\Component;
 
 class Card extends Component
 {
+    public int $id;
     public string $title;
     public string $description;
     public string $url;
@@ -16,8 +17,9 @@ class Card extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct($title, string $description, string $url)
+    public function __construct(string $title, string $description, string $url, int $id = 0)
     {
+        $id != 0 ? $this->id = $id : $this->id = 0;
         $this->title = $title;
         $this->description = $description;
         $this->url = $url;

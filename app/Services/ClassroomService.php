@@ -2,7 +2,6 @@
 namespace App\Services;
 
 use Illuminate\Http\Request;
-use App\Models\Subject;
 use App\Models\Classroom;
 use Illuminate\Support\Collection;
 

@@ -5,7 +5,6 @@ use Illuminate\Http\Request;
 use App\Services\StudentService;
 use App\Http\Controllers\Controller;
 use App\Models\Student;
-use Carbon\Carbon;
 
 class StudentController extends Controller
 {
@@ -32,18 +31,17 @@ class StudentController extends Controller
     public function home(Request $request)
     {
         $student = auth()->user()->student;
-        $subjects = $this->service->getSubjects($request->input("search") ?? "");
-        $tests = $this->service->getTests($request->input("search") ?? "");
+        $subjects = $this->service->getSubjectCards($request->input("search") ?? "");
+        $tests = $this->service->getTestCards($request->input("search") ?? "");
         return $this->ajaxOrView($request, 'app.content.user.student.home', ["subjects" => $subjects, "student" => $student, "tests" => $tests]);
     }
     public function info(Request $request)
     {
         $student = $this->service->getInfo();
+        $grades = $this->service->getGrades();
         $class = $this->service->getClass();
 
-        $className = $class["Name"] ?? "Not assigned";
-
-        return $this->ajaxOrView($request, "app.content.user.student.info", ["student" => $student, "class" => $class]);
+        return $this->ajaxOrView($request, "app.content.user.student.info", ["student" => $student, "grades" => $grades, "class" => $class]);
     }
     public function subject(Request $request, int $subjectId)
     {
@@ -56,7 +54,7 @@ class StudentController extends Controller
     }
     public function subjects(Request $request)
     {
-        $result = $this->service->getSubjects($request->input("search") ?? "");
+        $result = $this->service->getSubjectCards($request->input("search") ?? "");
         return $this->ajaxOrView($request, "app.content.subject.subjects", ["subjects" => $result]);
     }
     public function test(Request $request, int $testId)
@@ -71,7 +69,7 @@ class StudentController extends Controller
     }
     public function tests(Request $request)
     {
-        $result = $this->service->getTests($request->input("search") ?? "");
+        $result = $this->service->getTestCards($request->input("search") ?? "");
         return $this->ajaxOrView($request, "app.content.test.tests", ["tests" => $result]);
     }
     public function timetable(Request $request)

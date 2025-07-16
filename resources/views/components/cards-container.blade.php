@@ -3,7 +3,7 @@
     @if(!empty($cards))
         @foreach ($cards as $card)
             <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 col-xxl-2">
-                <x-card :title="$card['title']" :description="$card['description']" :url="$card['url']" />
+                <x-card :title="$card->title" :description="$card->description" :url="$card->url" :id="$card->id"/>
             </div>
         @endforeach
     @else

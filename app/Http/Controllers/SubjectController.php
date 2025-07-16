@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\SubjectService;
-use App\Models\Subject;
 use App\Http\Controllers\Controller;
 
 class SubjectController extends Controller

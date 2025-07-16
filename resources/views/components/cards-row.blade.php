@@ -3,7 +3,7 @@
     <div class="d-flex flex-nowrap" style="min-width: max-content;">
         @if(!empty($cards))
             @foreach ($cards as $card)
-                <x-card :title="$card['title']" :description="$card['description']" :url="$card['url']"/>
+                <x-card :title="$card->title" :description="$card->description" :url="$card->url" :id="$card->id"/>
             @endforeach
         @else
             <p class="aplus-text-dark-red">No items to show</p>

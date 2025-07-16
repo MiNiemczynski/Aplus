@@ -1,9 +1,7 @@
 <?php
 namespace App\Services;
 
-use App\Models\Subject;
 use App\Models\FinalGrade;
-use Illuminate\Support\Collection;
 
 class FinalGradeService
 {

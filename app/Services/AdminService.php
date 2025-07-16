@@ -5,10 +5,9 @@ use App\Models\User;
 use App\Models\Subject;
 use App\Models\ClassGroup;
 use App\Models\Classroom;
-use App\Models\Teacher;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Hash;
+use App\View\Components\Card;
 
 class AdminService
 {
@@ -19,24 +18,24 @@ class AdminService
             ["IsActive", "=", true]
         ])->first();
     }
-    public function getAllSubjects(string $search = ""): array
+    public function getSubjectCards(string $search = ""): array
     {
         $subjectService = new SubjectService();
         $subjects = $subjectService->getAll($search);
 
-        $data[] = [
-            "title" => "Add new",
-            "description" => "",
-            "url" => "/admin/subjects/create"
-        ];
+        $cards[] = new Card(
+            "Add new",
+            "",
+            "/admin/subjects/create"
+        );
         foreach ($subjects as $subject) {
-            $data[] = [
-                "title" => $subject->Name,
-                "description" => "",
-                "url" => "/admin/subjects/edit/" . $subject->Id
-            ];
+            $cards[] = new Card(
+                $subject->Name,
+                "",
+                "/admin/subjects/edit/" . $subject->Id
+            );
         }
-        return $data;
+        return $cards;
     }
     public function getSubject(int $subjectId): ?Subject
     {
@@ -44,56 +43,55 @@ class AdminService
         return $subjectService->getById($subjectId);
     }
 
-    public function getAllClassGroups(string $search = ""): array
+    public function getClassGroupCards(string $search = ""): array
     {
         $classGroupService = new ClassGroupService();
         $classGroups = $classGroupService->getAll($search);
 
-        $data[] = [
-            "title" => "Add new",
-            "description" => "",
-            "url" => "/admin/classgroups/create"
-        ];
+        $cards[] = new Card(
+            "Add new",
+            "",
+            "/admin/classgroups/create"
+        );
         foreach ($classGroups as $classGroup) {
-            $data[] = [
-                "id" => $classGroup->Id,
-                "title" => $classGroup->Name,
-                "description" => "",
-                "url" => "/admin/classgroups/edit/" . $classGroup->Id
-            ];
+            $cards[] = new Card(
+                $classGroup->Name,
+                "",
+                "/admin/classgroups/edit/" . $classGroup->Id
+            );
         }
-        return $data;
+        return $cards;
     }
     public function getClassGroup(int $classGroupId): ?ClassGroup
     {
         $classGroupService = new ClassGroupService();
         return $classGroupService->getById($classGroupId);
     }
-    public function getAllClassrooms(string $search = ""): array
+    public function getClassroomCards(string $search = ""): array
     {
         $classroomService = new ClassroomService();
         $classrooms = $classroomService->getAll($search);
 
-        $data[] = [
-            "title" => "Add new",
-            "description" => "",
-            "url" => "/admin/classrooms/create"
-        ];
+        $cards[] = new Card(
+            "Add new",
+            "",
+            "/admin/classrooms/create"
+        );
         foreach ($classrooms as $classroom) {
-            $data[] = [
-                "title" => "Room: " . $classroom->RoomNumber,
-                "description" => "Floor: " . $classroom->FloorNumber,
-                "url" => "/admin/classrooms/edit/" . $classroom->Id
-            ];
+            $cards[] = new Card(
+                "Room: " . $classroom->RoomNumber,
+                "Floor: " . $classroom->FloorNumber,
+                "/admin/classrooms/edit/" . $classroom->Id
+            );
         }
-        return $data;
+        return $cards;
     }
     public function getClassroom(int $classroomId): ?Classroom
     {
         $classroomService = new ClassroomService();
         return $classroomService->getById($classroomId);
     }
-    public function getAllUsers(string $search = ""): array
+    public function getAllUserCards(string $search = ""): array
     {
         $users = User::with(['student', 'teacher'])->where([
             ["IsActive", "=", true]
@@ -103,47 +101,47 @@ class AdminService
         }
         $users = $users->get();
 
-        $admins = [[
-            "title" => "Add new",
-            "description" => "",
-            "url" => "/admin/admins/create"
-        ]];
-        $students = [[
-            "title" => "Add new",
-            "description" => "",
-            "url" => "/admin/students/create"
-        ]];
-        $teachers = [[
-            "title" => "Add new",
-            "description" => "",
-            "url" => "/admin/teachers/create"
-        ]];
+        $adminCards = [new Card(
+            "Add new",
+            "",
+            "/admin/admins/create"
+        )];
+        $studentCards = [new Card(
+            "Add new",
+            "",
+            "/admin/students/create"
+        )];
+        $teacherCards = [new Card(
+            "Add new",
+            "",
+            "/admin/teachers/create"
+        )];
         foreach ($users as $user) {
             if ($user->isAdmin()) {
-                $admins[] = [
-                    "title" => $user->Name,
-                    "description" => "admin",
-                    "url" => "/admin/admins/edit/".$user->Id
-                ];
+                $adminCards[] = new Card(
+                    $user->Name,
+                    "admin",
+                    "/admin/admins/edit/".$user->Id
+                );
                 continue;
             }
             if ($user->isStudent()) {
-                $students[] = [
-                    "title" => $user->Name,
-                    "description" => "student",
-                    "url" => "/admin/students/edit/".$user->student->Id
-                ];
+                $studentCards[] = new Card(
+                    $user->Name,
+                    "student",
+                    "/admin/students/edit/".$user->student->Id
+                );
                 continue;
             }
             if ($user->isTeacher()) {
-                $teachers[] = [
-                    "title" => $user->Name,
-                    "description" => "teacher",
-                    "url" => "/admin/teachers/edit/".$user->teacher->Id
-                ];
+                $teacherCards[] = new Card(
+                    $user->Name,
+                    "teacher",
+                    "/admin/teachers/edit/".$user->teacher->Id
+                );
             }
         }
-        return ["admins" => $admins, "students"=> $students, "teachers"=> $teachers];
+        return ["admins" => $adminCards, "students"=> $studentCards, "teachers"=> $teacherCards];
     }
     
     public function create(Request $request)

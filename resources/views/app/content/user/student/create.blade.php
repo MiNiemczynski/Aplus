@@ -43,8 +43,8 @@ else
                             </label>
                             <select name="classGroupId" class="form-select validate">
                                 @foreach (array_slice($classgroups, 1) as $group)
-                                    <option value="{{ $group["id"] }}" {{ (isset($student) && $student->ClassGroupId == $group["id"]) ? 'selected' : '' }}>
-                                        {{ $group['title'] }}
+                                    <option value="{{ $group->id }}" {{ (isset($student) && $student->ClassGroupId == $group->id) ? 'selected' : '' }}>
+                                        {{ $group->title }}
                                     </option>
                                 @endforeach
                             </select>

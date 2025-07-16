@@ -1,3 +1,6 @@
+<?php
+use Carbon\Carbon;
+?>
 <div class="container">
     <h2 class="mb-4">Student's data</h2>
 
@@ -13,21 +16,21 @@
     <div class="card">
         <div class="card-header aplus-bg-dark-violet text-white">Grades</div>
         <div class="card-body">
-            @if ($student->grades->count() > 0)
+            @if ($grades->count() > 0)
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Przedmiot</th>
-                            <th>Ocena</th>
-                            <th>Data</th>
+                            <th>Subject</th>
+                            <th>Grade</th>
+                            <th>Date</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($student->grades as $grade)
+                        @foreach ($grades as $grade)
                             <tr>
                                 <td>{{ $grade->SubjectName ?? 'Unknown' }}</td>
                                 <td>{{ $grade->Mark }}</td>
-                                <td>{{ $grade->CreationDate->format('Y-m-d') }}</td>
+                                <td>{{ Carbon::parse($grade->CreationDate)->format('Y-m-d') }}</td>
                             </tr>
                         @endforeach
                     </tbody>

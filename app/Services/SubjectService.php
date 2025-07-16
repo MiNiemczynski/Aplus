@@ -15,6 +15,36 @@ class SubjectService
         ])->first();
         return $subject;
     }
+    
+    public function getByClassSessionId(int $classSessionId): ?Subject
+    {
+        $subject = Subject::join('ClassSessions', 'ClassSessions.SubjectId', '=', 'Subjects.Id')
+            ->where([
+                ["ClassSessions.Id", "=", $classSessionId],
+                ["ClassSessions.IsActive", "=", true]
+            ])
+            ->first();
+        return $subject;
+    }
+
+    public function getByClassId(int $classId, ?string $search = null): Collection
+    {
+        $subjects = Subject::join('ClassSessions', 'ClassSessions.SubjectId', '=', 'Subjects.Id')
+            ->where([
+                ["ClassGroupId", "=", $classId],
+                ["ClassSessions.IsActive", "=", true],
+                ["Subjects.IsActive", "=", true]
+            ])
+            ->select('Subjects.*')
+            ->distinct();
+
+        if (!empty($search)) {
+            $subjects->where('Subjects.Name', 'LIKE', "%$search%");
+        }
+
+        return $subjects->get();
+    }
+
 
     public function getAll(string $search = ""): Collection
     {

@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\TestService;
-use App\Models\Test;
 use App\Http\Controllers\Controller;
 
 class TestController extends Controller

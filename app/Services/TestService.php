@@ -1,10 +1,8 @@
 <?php
 namespace App\Services;
 
-use App\Models\ClassGroup;
-use App\Models\ClassSession;
 use App\Models\Test;
-use App\Models\Subject;
+use Illuminate\Support\Collection;
 use DB;
 
 class TestService
@@ -17,19 +15,29 @@ class TestService
         ])->first();
         return $test;
     }
-    public function getSubject(int $testId): Subject
-    {
-        $subject = DB::table('Tests')
-            ->join('ClassSessions', 'Tests.ClassSessionId', '=', 'ClassSessions.Id')
-            ->join('Subjects', 'ClassSessions.SubjectId', '=', 'Subjects.Id')
+    public function getByClassGroupId(int $classId, string $search = ""): Collection
+    { 
+        $tests = DB::table("ClassSessions")
             ->where([
-                ['Tests.Id', "=", $testId],
-                ['Tests.IsActive', "=", true],
-                ['ClassSessions.IsActive', "=", true],
-                ['Subjects.IsActive', "=", true]
-            ])->first();
+                ["ClassSessions.ClassGroupId", "=", $classId],
+                ["ClassSessions.IsActive", "=", true]
+            ])
+            ->join("Tests", "Tests.ClassSessionId", "=", "ClassSessions.Id")
+            ->where("Tests.IsActive", true)
+            ->join("Subjects", "Subjects.Id", "=", "ClassSessions.SubjectId")
+            ->select(
+                "Tests.Id as Id",
+                "ClassSessions.SessionDate as Date",
+                "Subjects.Name as Subject"
+            );
 
-        return $subject;
+        if (!empty($search)) {
+            $tests = $tests
+                ->where('ClassSessions.SessionDate', 'LIKE', "%$search%")
+                ->orWhere('Subjects.Name', 'LIKE', "%$search%");
+        }
+
+       return $tests->get();
     }
     public function getInfo(int $id): Test
     {

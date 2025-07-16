@@ -2,17 +2,14 @@
 namespace App\Services;
 
 use App\Models\ClassGroup;
-use App\Models\ClassSession;
 use App\Models\Student;
-use Illuminate\Http\Request;
-use App\Models\Subject;
 use App\Models\User;
-use App\Models\Grade;
-use DB;
-use App\Services\FinalGradeService;
+use Illuminate\Support\Collection;
+use Illuminate\Http\Request;
 use Hash;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
+use App\Services\FinalGradeService;
+use App\View\Components\Card;
 
 class StudentService
 {
@@ -27,7 +24,7 @@ class StudentService
     {
         $userId = auth()->user()->Id;
 
-        $student = Student::with(['user', 'grades'])->where([
+        $student = Student::with(['user'])->where([
             ["UserId", "=", $userId],
             ["IsActive", "=", true]
         ])->first();
@@ -42,91 +39,62 @@ class StudentService
         $class = $classGroupService->getById($classId);
         return $class;
     }
+    public function getGrades(): Collection
+    {
+        $studentId = auth()->user()->student->Id;
+        $gradeService = new GradeService();
+
+        $grades = $gradeService->getByStudentId($studentId);
+        return $grades;
+    }
     public function getSubject(int $subjectId)
     {
         $studentId = auth()->user()->student->Id;
-        $classId = auth()->user()->student->ClassGroupId;
 
         $subjectService = new SubjectService();
         $subject = $subjectService->getById($subjectId);
 
         $finalgradeService = new FinalGradeService();
         $finalGrade = $finalgradeService->getByStudentSubject($studentId, $subjectId);
-
-        $testGrades = Grade::where([
-            ['grades.StudentId', '=', $studentId],
-            ['grades.IsActive', '=', true]
-        ])
-            ->join('tests', 'grades.TestId', '=', 'tests.Id')
-            ->join('classsessions', 'tests.ClassSessionId', '=', 'classsessions.Id')
-            ->where([
-                ['tests.IsActive', '=', true],
-                ['classsessions.IsActive', '=', true],
-                ['classsessions.SubjectId', '=', $subjectId],
-                ['classsessions.ClassGroupId', '=', $classId],
-            ])->get();
+        
+        $gradeService = new GradeService();
+        $grades = $gradeService->getBySubjectAndStudentId($subjectId, $studentId);
 
         return [
             'subject' => $subject,
             'finalGrade' => $finalGrade->Mark ?? null,
-            'grades' => $testGrades
+            'grades' => $grades
         ];
     }
-    public function getSubjects(string $search = ""): array
+    public function getSubjectCards(string $search = ""): array
     {
         $classId = auth()->user()->student->ClassGroupId;
-        $subjects = ClassSession::where([
-            ["ClassGroupId", "=", $classId],
-            ["ClassSessions.IsActive", "=", true]
-        ])->join('Subjects', 'SubjectId', '=', 'Subjects.Id')
-            ->select('Subjects.*')
-            ->distinct();
+        
+        $subjectService = new SubjectService();
+        $subjects = $subjectService->getByClassId($classId, $search);
 
-        if (!empty($search)) {
-            $subjects = $subjects->where('Name', 'LIKE', "%$search%");
-        }
-
-        $subjects = $subjects->get();
-
-        $data = [];
         foreach ($subjects as $subject) {
-            $data[] = [
-                "title" => $subject->Name,
-                "description" => "",
-                "url" => "/student/subjects/" . $subject->Id
-            ];
+            $cards[] = new Card(
+                $subject->Name,
+                "",
+                "/student/subjects/" . $subject->Id
+            );
         }
-        return $data;
+        return $cards;
     }
     public function getTest(int $testId): array
     {
-        $classId = auth()->user()->student->ClassGroupId;
-
-
         $testService = new TestService();
         $test = $testService->getById($testId);
 
         $gradeService = new GradeService();
-        $grade = $gradeService->getByTest($testId);
+        $grade = $gradeService->getByTestId($testId);
 
-        $classSession = ClassSession::where([
-            ['ClassSessions.IsActive', '=', true],
-            ['ClassSessions.ClassGroupId', '=', $classId]
-        ])
-            ->join('Tests', 'ClassSessions.Id', '=', 'Tests.ClassSessionId')
-            ->where([
-                ['Tests.IsActive', '=', true],
-                ['Tests.Id', '=', $testId]
-            ])->first();
+        $classSessionService = new ClassSessionService();
+        $classSession = $classSessionService->getByTestId($testId);
 
-        $subject = DB::table('Subjects')
-            ->join('ClassSessions', 'Subjects.Id', '=', 'ClassSessions.SubjectId')
-            ->where([
-                ['ClassSessions.Id', '=', $classSession->Id],
-                ['Subjects.IsActive', '=', true],
-            ])
-            ->select('Subjects.Name as Name')
-            ->first();
+        $subjectService = new SubjectService();
+        $subject = $subjectService->getByClassSessionId($classSession->Id);
 
         return [
             'subject' => $subject->Name,
@@ -136,56 +104,31 @@ class StudentService
         ];
     }
 
-    public function getTests(string $search = ""): array
+    public function getTestCards(string $search = ""): array
     {
         $classId = auth()->user()->student->ClassGroupId;
-        $tests = DB::table("ClassSessions")
-            ->where(
-                [
-                    ["ClassSessions.ClassGroupId", "=", $classId],
-                    ["ClassSessions.IsActive", "=", true]
-                ]
-            )->join("Tests", "Tests.ClassSessionId", "=", "ClassSessions.Id")
-            ->where("Tests.IsActive", true)
-            ->join("Subjects", "Subjects.Id", "=", "ClassSessions.SubjectId")
-            ->select(
-                "Tests.Id as Id",
-                "ClassSessions.SessionDate as Date",
-                "Subjects.Name as Subject"
-            );
+        
+        $testService = new TestService();
+        $tests = $testService->getByClassGroupId($classId, $search);
 
-        if (!empty($search)) {
-            $tests = $tests
-                ->where('ClassSessions.SessionDate', 'LIKE', "%$search%")
-                ->orWhere('Subjects.Name', 'LIKE', "%$search%");
-        }
-
-        $tests = $tests->get();
-
-        $data = [];
         foreach ($tests as $test) {
-            $data[] = [
-                "title" => $test->Subject,
-                "description" => $test->Date,
-                "url" => "/student/tests/" . $test->Id
-            ];
+            $cards[] = new Card(
+                $test->Subject,
+                $test->Date,
+                "/student/tests/" . $test->Id
+            );
         }
-        return $data;
+        return $cards;
     }
     public function getWeek(Carbon $weekStart)
     {
         $classId = auth()->user()->student->ClassGroupId;
         $weekEnd = $weekStart->copy()->addDays(6)->endOfDay();
 
-        $sessions = ClassSession::where([
-            ["ClassSessions.ClassGroupId", "=", $classId],
-            ["ClassSessions.IsActive", "=", true]
-        ])
-            ->whereBetween('ClassSessions.SessionDate', [$weekStart->startOfDay(), $weekEnd])
-            ->orderBy('ClassSessions.SessionDate')
-            ->with(['Subject'])->get();
+        $classSessionService = new ClassSessionService();
+        $classSessions = $classSessionService->getClassSessionsByClassInRange($classId, $weekStart, $weekEnd);
 
-        return $sessions;
+        return $classSessions;
     }
 
     public function getTimetable(int $offset): array
