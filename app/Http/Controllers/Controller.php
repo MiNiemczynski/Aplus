@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -23,5 +22,12 @@ class Controller extends BaseController
             'ajaxView' => view($view, $data)->render(),
             'search' => $search
         ]);
+    }
+    protected function redirectToRoleRoute(string $routeName)
+    {
+        $user = auth()->user();
+        if($user->isAdmin()) return redirect()->route("admin." . $routeName);
+        else if ($user->isTeacher()) return redirect()->route("teacher." . $routeName); 
+        else return redirect()->route("student." . $routeName);
     }
 }

@@ -19,7 +19,7 @@ class ClassroomService
     {
         $classrooms = Classroom::where([
             ["IsActive", "=", true]
-        ]);
+        ])->orderBy('FloorNumber', 'asc')->orderBy('RoomNumber', 'asc');
 
         if (!empty($search)) {
             $classrooms = $classrooms
@@ -31,9 +31,19 @@ class ClassroomService
     }
     public function create(Request $request)
     {
+        $model = Classroom::where([
+            ["RoomNumber", "=", $request->input("room")],
+            ["FloorNumber", "=", $request->input("floor")]
+        ])->first();
+        if($model != null) {
+            $model->IsActive = true;
+            $model->save();
+            return;
+        }
+
         $request->validate([
             'room' => ['required', 'integer', 'between:1,99'],
-            'floor' => ['required', 'integer', 'between:1,2']
+            'floor' => ['required', 'integer', 'between:0,2']
         ]);
 
         $model = new Classroom();
@@ -46,7 +56,7 @@ class ClassroomService
     {
         $request->validate([
             'room' => ['required', 'integer', 'between:1,99'],
-            'floor' => ['required', 'integer', 'between:1,2']
+            'floor' => ['required', 'integer', 'between:0,2']
         ]);
 
         $model = Classroom::find($id);

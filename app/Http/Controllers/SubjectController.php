@@ -20,16 +20,16 @@ class SubjectController extends Controller
     public function create(Request $request)
     {
         $this->service->create($request);
-        return redirect()->route("admin.subjects");
+        return $this->redirectToRoleRoute("subjects");
     }
     public function update(Request $request, int $id)
     {
         $this->service->update($request, $id);
-        return redirect()->route("admin.subjects");
+        return $this->redirectToRoleRoute("subjects");
     }
     public function delete(Request $request, int $id)
     {
         $this->service->delete($id);
-        return redirect()->route("admin.subjects");
+        return $this->redirectToRoleRoute("subjects");
     }
 }

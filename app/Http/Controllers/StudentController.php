@@ -4,44 +4,33 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\StudentService;
 use App\Http\Controllers\Controller;
-use App\Models\Student;
 
 class StudentController extends Controller
 {
     private StudentService $service;
-    private Student $student;
     public function __construct()
     {
         $this->service = new StudentService();
     }
-    public function index(Request $request)
-    {
-        $user = auth()->user();
-        if (!$user) {
-            return view("sign-in.login", ["errors" => ["You have been logged out!"]]);
-        }
-
-        $student = $user->student;
-        if (!$student) {
-            abort(403, "Access denied – you are not a student");
-        }
-
-        return $this->home($request);
-    }
     public function home(Request $request)
     {
-        $student = auth()->user()->student;
+        $student = auth()->user();
         $subjects = $this->service->getSubjectCards($request->input("search") ?? "");
         $tests = $this->service->getTestCards($request->input("search") ?? "");
-        return $this->ajaxOrView($request, 'app.content.user.student.home', ["subjects" => $subjects, "student" => $student, "tests" => $tests]);
+
+        return $this->ajaxOrView($request, 'app.content.user.student.home', [
+            "student" => $student,
+            "subjects" => $subjects,
+            "tests" => $tests
+        ]);
     }
     public function info(Request $request)
     {
         $student = $this->service->getInfo();
         $grades = $this->service->getGrades();
-        $class = $this->service->getClass();
+        $className = $this->service->getClassName();
 
-        return $this->ajaxOrView($request, "app.content.user.student.info", ["student" => $student, "grades" => $grades, "class" => $class]);
+        return $this->ajaxOrView($request, "app.content.user.student.info", ["student" => $student, "grades" => $grades, "className" => $className]);
     }
     public function subject(Request $request, int $subjectId)
     {
@@ -60,7 +49,7 @@ class StudentController extends Controller
     public function test(Request $request, int $testId)
     {
         $result = $this->service->getTest($testId);
-        return $this->ajaxOrView($request, "app.content.user.student.test-info", [
+        return $this->ajaxOrView($request, "app.content.test.student-info", [
             "subject" => $result['subject'],
             "test" => $result['test'],
             "date" => $result['date'],

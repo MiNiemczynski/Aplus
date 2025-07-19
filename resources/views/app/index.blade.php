@@ -28,6 +28,14 @@
   </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
+  $(document).ready(function () {
+    const homeUrl = window.location.pathname;
+
+    if (!window.history.state || window.history.state.url !== homeUrl) {
+      history.pushState({ url: homeUrl }, "", homeUrl);
+    }
+  });
+
   $(document).on("click", ".content-link", function (e) {
     e.preventDefault();
     const url = $(this).data("url");

@@ -19,11 +19,18 @@ class SignInController extends Controller
     }
     public function login(Request $request) {
         $result = $this->service->login($request);
-        $role = $result["role"] ?? "";
-        if($role != "") {
-            return redirect()->route($role.".panel")->with('replace', true);
+        $user = auth()->user();
+        if($user) {
+            return redirect()->route($user->getRoleName().".home")->with('replace', true);
         }
         return view("sign-in.login", $result);
+    }
+    public function logout(Request $request) {
+        auth()->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return view("sign-in.login");
     }
     public function register(Request $request) {
         $result = $this->service->register($request);

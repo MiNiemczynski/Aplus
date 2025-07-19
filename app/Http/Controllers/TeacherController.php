@@ -12,19 +12,6 @@ class TeacherController extends Controller
     {
         $this->service = new TeacherService();
     }
-    public function index(Request $request) {
-        $user = auth()->user();
-        if (!$user) {
-            return view("sign-in.login", ["errors" => ["You have been logged out!"]]);
-        }
-
-        $teacher = $user->teacher;
-        if (!$teacher) {
-            abort(403, "Access denied – you are not a teacher");
-        }
-
-        return $this->home($request);
-    }
     public function home(Request $request)
     {
         $teacher = auth()->user()->teacher;

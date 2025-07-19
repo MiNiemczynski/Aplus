@@ -26,32 +26,32 @@
       @csrf
       <div class="mb-3">
         <label for="name" class="form-label">Name and surname</label>
-        <input type="text" class="form-control" name="name" value="{{ $name ?? "" }}" required>
+        <input type="text" class="form-control" id="name" name="name" value="{{ $name ?? "" }}" required>
       </div>
 
       <div class="mb-3">
         <label for="email" class="form-label">E-mail address</label>
-        <input type="email" class="form-control" name="email" value="{{ $email ?? "" }}" required>
+        <input type="email" class="form-control" id="email" name="email" value="{{ $email ?? "" }}" required>
       </div>
 
       <div class="mb-3">
         <label for="password" class="form-label">Password</label>
-        <input type="password" class="form-control" name="password" required>
+        <input type="password" class="form-control" id="password" name="password" required>
       </div>
 
       <div class="mb-3">
         <label for="password_repeat" class="form-label">Repeat password</label>
-        <input type="password" class="form-control" name="password_repeat" required>
+        <input type="password" class="form-control" id="password_repeat" name="password_repeat" required>
       </div>
 
       <div class="mb-3">
-        <label for="password_repeat" class="form-label">Role</label><br>
+        <label class="form-label">Role</label><br>
         <input class="form-check-input" type="radio" name="role" value="student" id="student" checked>
         <label for="student">student</label><br>
         <input class="form-check-input" type="radio" name="role" value="teacher" id="teacher">
         <label for="teacher">teacher</label><br>
         <input class="form-check-input" type="radio" name="role" value="admin" id="admin">
-        <label for="admin">admininstrator</label>
+        <label for="admin">administrator</label>
       </div>
 
       <button type="submit" class="btn btn-success w-100">Register</button>

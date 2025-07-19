@@ -9,7 +9,7 @@ use Carbon\Carbon;
         <div class="card-body">
             <p><strong>Name and surname:</strong> {{ $student->user->Name }}</p>
             <p><strong>E-mail:</strong> {{ $student->user->Email }}</p>
-            <p><strong>Class:</strong> {{ $class->Name }}</p>
+            <p><strong>Class:</strong> {{ $className }}</p>
         </div>
     </div>
 

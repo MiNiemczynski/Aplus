@@ -31,13 +31,13 @@ class StudentService
 
         return $student;
     }
-    public function getClass(): ClassGroup
+    public function getClassName(): string
     {
         $classId = auth()->user()->student->ClassGroupId;
         $classGroupService = new ClassGroupService();
 
         $class = $classGroupService->getById($classId);
-        return $class;
+        return $class->Name;
     }
     public function getGrades(): Collection
     {

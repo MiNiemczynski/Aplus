@@ -15,19 +15,6 @@ class AdminController extends Controller
     {
         $this->service = new AdminService();
     }
-    public function index(Request $request)
-    {
-        $user = auth()->user();
-
-        if (!$user) {
-            return view("sign-in.login", ["errors" => ["You have been logged out!"]]);
-        }
-        if (!$user->isAdmin()) {
-            abort(403, "Access denied – you are not an administrator");
-        }
-
-        return $this->home($request);
-    }
     public function home(Request $request)
     {
         $admin = auth()->user();

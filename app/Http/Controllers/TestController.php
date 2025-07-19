@@ -22,7 +22,7 @@ class TestController extends Controller
 
         return $this->ajaxOrView(
             $request,
-            "app.content.test-info",
+            "app.content.test.info",
             [
                 "test" => $result,
                 "classGroup" => $classGroupName,

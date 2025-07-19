@@ -29,6 +29,13 @@ class ClassGroupService
     }
     public function create(Request $request)
     {
+        $model = ClassGroup::where("Name", $request->input("name"))->first();
+        if($model) {
+            $model->IsActive = true;
+            $model->save();
+            return;
+        }
+        
         $request->validate([
             'name' => ['required', 'max:100'],
         ]);

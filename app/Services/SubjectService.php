@@ -61,6 +61,13 @@ class SubjectService
 
     public function create(Request $request)
     {
+        $model = Subject::where("Name", $request->input("name"))->first();
+        if($model) {
+            $model->IsActive = true;
+            $model->save();
+            return;
+        }
+
         $request->validate([
             'name' => ['required', 'max:100'],
         ]);
