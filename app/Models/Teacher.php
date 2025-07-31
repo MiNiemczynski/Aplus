@@ -15,9 +15,10 @@ class Teacher extends Model
     protected $primaryKey = "Id";
 
     public array $teacherMenuActions = [
-        ["text" => "Timetable", "url" => "", "icon" => "bi bi-calendar2-week"],
-        ["text" => "Subjects", "url" => "", "icon" => "bi bi-book"],
-        ["text" => "Students", "url" => "", "icon" => "bi bi-people"]
+        ["text" => "Timetable", "url" => "/teacher/timetable", "icon" => "bi bi-calendar2-week"],
+        ["text" => "Class Groups", "url" => "/teacher/classgroups", "icon" => "bi bi-person-lines-fill"],
+        ["text" => "Subjects", "url" => "/teacher/subjects", "icon" => "bi bi-book"],
+        ["text" => "Teacher info", "url" => "/teacher/info", "icon" => "bi bi-person-bounding-box"]
     ];
 
     public $timestamps = true;

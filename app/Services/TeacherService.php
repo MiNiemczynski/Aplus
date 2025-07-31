@@ -6,8 +6,8 @@ use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Hash;
 
-class TeacherService {
-    public function getById(int $id): Teacher {
+class TeacherService extends UserService {
+    public function getTeacherById(int $id): Teacher {
         return Teacher::with("user")->where([
             ["Id", "=", $id],
             ["IsActive", "=", true]

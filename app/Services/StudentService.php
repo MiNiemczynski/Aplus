@@ -1,19 +1,15 @@
 <?php
 namespace App\Services;
 
-use App\Models\ClassGroup;
 use App\Models\Student;
 use App\Models\User;
-use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 use Hash;
 use Carbon\Carbon;
-use App\Services\FinalGradeService;
-use App\View\Components\Card;
 
-class StudentService
+class StudentService extends UserService
 {
-    public function getById(int $id): Student
+    public function getStudentById(int $id): Student
     {
         return Student::with("user")->where([
             ["Id", "=", $id],
@@ -30,95 +26,6 @@ class StudentService
         ])->first();
 
         return $student;
-    }
-    public function getClassName(): string
-    {
-        $classId = auth()->user()->student->ClassGroupId;
-        $classGroupService = new ClassGroupService();
-
-        $class = $classGroupService->getById($classId);
-        return $class->Name;
-    }
-    public function getGrades(): Collection
-    {
-        $studentId = auth()->user()->student->Id;
-        $gradeService = new GradeService();
-
-        $grades = $gradeService->getByStudentId($studentId);
-        return $grades;
-    }
-    public function getSubject(int $subjectId)
-    {
-        $studentId = auth()->user()->student->Id;
-
-        $subjectService = new SubjectService();
-        $subject = $subjectService->getById($subjectId);
-
-        $finalgradeService = new FinalGradeService();
-        $finalGrade = $finalgradeService->getByStudentSubject($studentId, $subjectId);
-        
-        $gradeService = new GradeService();
-        $grades = $gradeService->getBySubjectAndStudentId($subjectId, $studentId);
-
-        return [
-            'subject' => $subject,
-            'finalGrade' => $finalGrade->Mark ?? null,
-            'grades' => $grades
-        ];
-    }
-    public function getSubjectCards(string $search = ""): array
-    {
-        $classId = auth()->user()->student->ClassGroupId;
-        
-        $subjectService = new SubjectService();
-        $subjects = $subjectService->getByClassId($classId, $search);
-
-        foreach ($subjects as $subject) {
-            $cards[] = new Card(
-                $subject->Name,
-                "",
-                "/student/subjects/" . $subject->Id
-            );
-        }
-        return $cards;
-    }
-    public function getTest(int $testId): array
-    {
-        $testService = new TestService();
-        $test = $testService->getById($testId);
-
-        $gradeService = new GradeService();
-        $grade = $gradeService->getByTestId($testId);
-
-        $classSessionService = new ClassSessionService();
-        $classSession = $classSessionService->getByTestId($testId);
-
-        $subjectService = new SubjectService();
-        $subject = $subjectService->getByClassSessionId($classSession->Id);
-
-        return [
-            'subject' => $subject->Name,
-            'test' => $test,
-            'date' => $classSession->SessionDate,
-            'grade' => $grade
-        ];
-    }
-
-    public function getTestCards(string $search = ""): array
-    {
-        $classId = auth()->user()->student->ClassGroupId;
-        
-        $testService = new TestService();
-        $tests = $testService->getByClassGroupId($classId, $search);
-
-        foreach ($tests as $test) {
-            $cards[] = new Card(
-                $test->Subject,
-                $test->Date,
-                "/student/tests/" . $test->Id
-            );
-        }
-        return $cards;
     }
     public function getWeek(Carbon $weekStart)
     {

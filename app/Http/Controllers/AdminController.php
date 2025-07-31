@@ -1,10 +1,13 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Services\AdminService;
 use App\Services\StudentService;
 use App\Services\TeacherService;
+use App\Services\ClassGroupService;
+use App\Services\ClassroomService;
+use App\Services\SubjectService;
 use Illuminate\Http\Request;
-use App\Services\AdminService;
 use App\Http\Controllers\Controller;
 use App\View\Components\Card;
 
@@ -20,9 +23,9 @@ class AdminController extends Controller
         $admin = auth()->user();
         return $this->ajaxOrView($request, 'app.content.user.admin.home', [
             "admin" => $admin,
-            "subjects" => $this->service->getSubjectCards($request->input("search") ?? ""),
-            "classgroups" => $this->service->getClassGroupCards($request->input("search") ?? ""),
-            "classrooms" => $this->service->getClassroomCards($request->input("search") ?? ""),
+            "subjects" => app(SubjectService::class)->getSubjectCards($request->input("search") ?? ""),
+            "classgroups" => app(ClassGroupService::class)->getClassGroupCards($request->input("search") ?? ""),
+            "classrooms" => app(ClassroomService::class)->getClassroomCards($request->input("search") ?? ""),
             "actioncards" => [
                 new Card("Admins", "", "/admin/admins"),
                 new Card("Students", "", "/admin/students"),
@@ -37,12 +40,12 @@ class AdminController extends Controller
     }
     public function subjectDetails(Request $request, int $id)
     {
-        $subject = $this->service->getSubject($id);
+        $subject = app(SubjectService::class)->getById($id);
         return $this->ajaxOrView($request, "app.content.subject.create", ["subject" => $subject]);
     }
     public function subjects(Request $request)
     {
-        $subjects = $this->service->getSubjectCards($request->input("search") ?? "");
+        $subjects = app(SubjectService::class)->getSubjectCards($request->input("search") ?? "");
         return $this->ajaxOrView($request, "app.content.subject.subjects", ["subjects" => $subjects]);
     }
     // class group
@@ -52,12 +55,12 @@ class AdminController extends Controller
     }
     public function classGroupDetails(Request $request, int $id)
     {
-        $classgroup = $this->service->getClassGroup($id);
+        $classgroup = app(ClassGroupService::class)->getById($id);
         return $this->ajaxOrView($request, "app.content.classgroup.create", ["classgroup" => $classgroup]);
     }
     public function classGroups(Request $request)
     {
-        $classgroups = $this->service->getClassGroupCards($request->input("search") ?? "");
+        $classgroups = app(ClassGroupService::class)->getClassGroupCards($request->input("search") ?? "");
         return $this->ajaxOrView($request, "app.content.classgroup.classgroups", ["classgroups" => $classgroups]);
     }
     // classroom
@@ -67,18 +70,18 @@ class AdminController extends Controller
     }
     public function classroomDetails(Request $request, int $id)
     {
-        $classroom = $this->service->getClassroom($id);
+        $classroom = app(ClassroomService::class)->getById($id);
         return $this->ajaxOrView($request, "app.content.classroom.create", ["classroom" => $classroom]);
     }
     public function classrooms(Request $request)
     {
-        $classrooms = $this->service->getClassroomCards($request->input("search") ?? "");
+        $classrooms = app(ClassroomService::class)->getClassroomCards($request->input("search") ?? "");
         return $this->ajaxOrView($request, "app.content.classroom.classrooms", ["classrooms" => $classrooms]);
     }
     // users 
     public function users(Request $request)
     {
-        $users = $this->service->getAllUserCards($request->input("search") ?? "");
+        $users = $this->service->getUserCards($request->input("search") ?? "");
         return $this->ajaxOrView($request, "app.content.user.users", [
             "actioncards" => [
                 new Card("Admins", "", "/admin/admins"),
@@ -93,17 +96,17 @@ class AdminController extends Controller
     public function create(Request $request)
     {
         $this->service->create($request);
-        return redirect()->route("admin.admins");
+        return $this->redirectToRoleRoute("admins");
     }
     public function update(Request $request, int $id)
     {
         $this->service->update($request, $id);
-        return redirect()->route("admin.admins");
+        return $this->redirectToRoleRoute("admins");
     }
     public function delete(Request $request, int $id)
     {
         $this->service->delete($id);
-        return redirect()->route("admin.admins");
+        return $this->redirectToRoleRoute("admins");
     }
     // admin
     public function createAdmin(Request $request)
@@ -112,30 +115,29 @@ class AdminController extends Controller
     }
     public function adminDetails(Request $request, int $id)
     {
-        $admin = $this->service->getById($id);
+        $admin = $this->service->getUserById($id);
         return $this->ajaxOrView($request, "app.content.user.admin.create", ["admin" => $admin]);
     }
     public function admins(Request $request)
     {
-        $admins = $this->service->getAllUserCards($request->input("search") ?? "")["admins"];
+        $admins = $this->service->getUserCards($request->input("search") ?? "")["admins"];
         return $this->ajaxOrView($request, "app.content.user.usersgroup", ["users" => $admins, "title" => "Admins"]);
     }
     // student
     public function createStudent(Request $request)
     {
-        $classgroups = $this->service->getClassGroupCards($request->input("search") ?? "");
+        $classgroups = app(ClassGroupService::class)->getClassGroupCards($request->input("search") ?? "");
         return $this->ajaxOrView($request, "app.content.user.student.create", ["classgroups" => $classgroups]);
     }
     public function studentDetails(Request $request, int $id)
     {
-        $studentService = new StudentService();
-        $student = $studentService->getById($id);
-        $classgroups = $this->service->getClassGroupCards($request->input("search") ?? "");
+        $student = app(StudentService::class)->getStudentById($id);
+        $classgroups = app(ClassGroupService::class)->getClassGroupCards($request->input("search") ?? "");
         return $this->ajaxOrView($request, "app.content.user.student.create", ["student" => $student, "classgroups" => $classgroups]);
     }
     public function students(Request $request)
     {
-        $students = $this->service->getAllUserCards($request->input("search") ?? "")["students"];
+        $students = $this->service->getUserCards($request->input("search") ?? "")["students"];
         return $this->ajaxOrView($request, "app.content.user.usersgroup", ["users" => $students, "title" => "Students"]);
     }
     // teacher
@@ -145,13 +147,12 @@ class AdminController extends Controller
     }
     public function teacherDetails(Request $request, int $id)
     {
-        $teacherService = new TeacherService();
-        $teacher = $teacherService->getById($id);
+        $teacher = app(TeacherService::class)->getTeacherById($id);
         return $this->ajaxOrView($request, "app.content.user.teacher.create", ["teacher" => $teacher]);
     }
     public function teachers(Request $request)
     {
-        $teachers = $this->service->getAllUserCards($request->input("search") ?? "")["teachers"];
+        $teachers = $this->service->getUserCards($request->input("search") ?? "")["teachers"];
         return $this->ajaxOrView($request, "app.content.user.usersgroup", ["users" => $teachers, "title" => "Teachers"]);
     }
 }

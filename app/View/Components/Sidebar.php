@@ -14,14 +14,14 @@ class Sidebar extends Component
     {
         $user = auth()->user();
         $this->sidebarButtons = [["text"=>"Home", "url"=>"/".$user->getRoleName()."/home", "icon"=>"bi bi-house-door"]];
-        switch($user) {
-            case $user->hasRole("student"):
+        switch($user->getRoleName()) {
+            case "student":
                 $this->sidebarButtons = array_merge($this->sidebarButtons, $user->student->studentMenuActions);
                 break;
-            case $user->hasRole("teacher"):
+            case "teacher":
                 $this->sidebarButtons = array_merge($this->sidebarButtons, $user->teacher->teacherMenuActions);
                 break;
-            case $user->hasRole("admin"):
+            case "admin":
                 $this->sidebarButtons = array_merge($this->sidebarButtons, $user->adminMenuActions);
                 break;
         };

@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Models\Test;
+use App\Helpers\CardFactories\TestCardFactory;
 use Illuminate\Support\Collection;
 use DB;
 
@@ -14,6 +15,21 @@ class TestService
             ["IsActive", "=", true]
         ])->first();
         return $test;
+    }
+    public function getByIdWithDetails(int $testId): array
+    {
+        $test = $this->getById($testId);
+
+        $grade = app(GradeService::class)->getByTestId($testId);
+        $classSession = app(ClassSessionService::class)->getByTestId($testId);
+        $subject = app(SubjectService::class)->getByClassSessionId($classSession->Id);
+
+        return [
+            'subject' => $subject->Name,
+            'test' => $test,
+            'date' => $classSession->SessionDate,
+            'grade' => $grade
+        ];
     }
     public function getByClassGroupId(int $classId, string $search = ""): Collection
     { 
@@ -46,5 +62,11 @@ class TestService
             ["IsActive", "=", true]
         ])->with(["ClassSession", "ClassSession.Subject", "ClassSession.ClassGroup"])->first();
         return $test;
+    }
+    
+    public function getTestCardsByClassGroupId(int $classId, string $search = ""): array
+    {
+        $tests = $this->getByClassGroupId($classId, $search);
+        return app(TestCardFactory::class)->makeCards($tests);
     }
 }

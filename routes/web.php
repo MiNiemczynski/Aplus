@@ -12,11 +12,12 @@ use App\Http\Middleware\RoleAuthorizationMiddleware;
 use Illuminate\Support\Facades\Route;
 
 // logging in and registering
-Route::get('/logout', [SignInController::class, "logout"]);
+Route::get('/', [SignInController::class, "loginPage"]);
 Route::get('/login', [SignInController::class, "loginPage"]);
 Route::get('/register', [SignInController::class, "registerPage"]);
 Route::post('/login', [SignInController::class, "login"]);
 Route::post('/register', [SignInController::class, "register"]);
+Route::get('/logout', [SignInController::class, "logout"]);
 
 // student CRUD
 Route::post('/student/Create', [StudentController::class, "create"])->name('student.create');

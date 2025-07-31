@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use App\View\Components\Card;
 
 class SubjectService
 {
@@ -14,6 +15,21 @@ class SubjectService
             ["IsActive", "=", true]
         ])->first();
         return $subject;
+    }
+    
+    public function getByIdWithDetails(int $subjectId)
+    {
+        $studentId = auth()->user()->student->Id;
+
+        $subject = $this->getById($subjectId);
+        $finalGrade = app(FinalGradeService::class)->getByStudentSubject($studentId, $subjectId);
+        $grades = app(GradeService::class)->getBySubjectAndStudentId($subjectId, $studentId);
+
+        return [
+            'subject' => $subject,
+            'finalGrade' => $finalGrade->Mark,
+            'grades' => $grades
+        ];
     }
     
     public function getByClassSessionId(int $classSessionId): ?Subject
@@ -27,7 +43,7 @@ class SubjectService
         return $subject;
     }
 
-    public function getByClassId(int $classId, ?string $search = null): Collection
+    public function getByClassGroupId(int $classId, string $search = ""): Collection
     {
         $subjects = Subject::join('ClassSessions', 'ClassSessions.SubjectId', '=', 'Subjects.Id')
             ->where([
@@ -41,10 +57,8 @@ class SubjectService
         if (!empty($search)) {
             $subjects->where('Subjects.Name', 'LIKE', "%$search%");
         }
-
         return $subjects->get();
     }
-
 
     public function getAll(string $search = ""): Collection
     {
@@ -93,5 +107,36 @@ class SubjectService
         $model = Subject::find($id);
         $model->IsActive = false;
         $model->save();
+    }
+    public function getSubjectCards(string $search = ""): array
+    {
+        $subjects = $this->getAll($search);
+
+        $cards[] = new Card(
+            "Add new",
+            "",
+            "/admin/subjects/create"
+        );
+        foreach ($subjects as $subject) {
+            $cards[] = new Card(
+                $subject->Name,
+                "",
+                "/admin/subjects/edit/" . $subject->Id
+            );
+        }
+        return $cards;
+    }
+    public function getSubjectCardsByClassGroupId(int $classId, string $search = ""): array
+    {
+        $subjects = $this->getByClassGroupId($classId, $search);
+
+        foreach ($subjects as $subject) {
+            $cards[] = new Card(
+                $subject->Name,
+                "",
+                "/student/subjects/" . $subject->Id
+            );
+        }
+        return $cards ?? [];
     }
 }

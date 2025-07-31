@@ -25,9 +25,6 @@ class Controller extends BaseController
     }
     protected function redirectToRoleRoute(string $routeName)
     {
-        $user = auth()->user();
-        if($user->isAdmin()) return redirect()->route("admin." . $routeName);
-        else if ($user->isTeacher()) return redirect()->route("teacher." . $routeName); 
-        else return redirect()->route("student." . $routeName);
+        return redirect()->route(auth()->user()->getRoleName().".".$routeName);
     }
 }

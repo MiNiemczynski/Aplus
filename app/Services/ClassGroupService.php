@@ -4,6 +4,7 @@ namespace App\Services;
 use Illuminate\Http\Request;
 use App\Models\ClassGroup;
 use Illuminate\Support\Collection;
+use App\View\Components\Card;
 
 class ClassGroupService
 {
@@ -60,5 +61,24 @@ class ClassGroupService
         $model = ClassGroup::find($id);
         $model->IsActive = false;
         $model->save();
+    }
+    public function getClassGroupCards(string $search = ""): array
+    {
+        $classGroups = $this->getAll($search);
+
+        $cards[] = new Card(
+            "Add new",
+            "",
+            "/admin/classgroups/create",
+        );
+        foreach ($classGroups as $classGroup) {
+            $cards[] = new Card(
+                $classGroup->Name,
+                "",
+                "/admin/classgroups/edit/" . $classGroup->Id,
+                $classGroup->Id
+            );
+        }
+        return $cards;
     }
 }
