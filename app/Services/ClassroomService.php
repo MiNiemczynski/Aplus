@@ -4,10 +4,14 @@ namespace App\Services;
 use Illuminate\Http\Request;
 use App\Models\Classroom;
 use Illuminate\Support\Collection;
-use App\View\Components\Card;
+use App\Helpers\CardFactories\ClassroomCardFactory;
 
 class ClassroomService
 {
+    private $cardFactory;
+    public function __construct() {
+        $this->cardFactory = app(ClassroomCardFactory::class);
+    }
     public function getById(int $id): ?Classroom
     {
         $classroom = Classroom::where([
@@ -76,19 +80,7 @@ class ClassroomService
     public function getClassroomCards(string $search = ""): array
     {
         $classrooms = $this->getAll($search);
-
-        $cards[] = new Card(
-            "Add new",
-            "",
-            "/admin/classrooms/create"
-        );
-        foreach ($classrooms as $classroom) {
-            $cards[] = new Card(
-                "Room: " . $classroom->RoomNumber,
-                "Floor: " . $classroom->FloorNumber,
-                "/admin/classrooms/edit/" . $classroom->Id
-            );
-        }
+        $cards = $this->cardFactory->makeCards($classrooms, addNew: true);
         return $cards;
     }
 }

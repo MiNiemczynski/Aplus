@@ -5,7 +5,7 @@ namespace App\Helpers\CardFactories;
 use App\View\Components\Card;
 use Illuminate\Support\Collection;
 
-class TestCardFactory extends CardFactory
+class ClassGroupCardFactory extends CardFactory
 {
     public function makeCards(Collection $items, bool $addNew = false): array
     {
@@ -14,14 +14,15 @@ class TestCardFactory extends CardFactory
             $cards[] = new Card(
                 "Add new",
                 "",
-                "/" . $role . "/tests/create",
+                "/" . $role . "/classgroups/create",
             );
         }
-        foreach ($items as $test) {
+        foreach ($items as $classGroup) {
             $cards[] = new Card(
-                $test->Subject,
-                $test->Date,
-                "/" . $role . "/tests/" . $test->Id
+                $classGroup->Name,
+                "",
+                "/" . $role . "/classgroups/" . $classGroup->Id,
+                $classGroup->Id
             );
         }
         return $cards ?? [];

@@ -8,6 +8,10 @@ use DB;
 
 class TestService
 {
+    private $cardFactory;
+    public function __construct() {
+        $this->cardFactory = app(TestCardFactory::class);
+    }
     public function getById(int $id): Test
     {
         $test = Test::where([
@@ -67,6 +71,7 @@ class TestService
     public function getTestCardsByClassGroupId(int $classId, string $search = ""): array
     {
         $tests = $this->getByClassGroupId($classId, $search);
-        return app(TestCardFactory::class)->makeCards($tests);
+        $cards = $this->cardFactory->makeCards($tests, addNew: true);
+        return $cards;
     }
 }

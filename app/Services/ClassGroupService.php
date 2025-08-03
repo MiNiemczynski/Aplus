@@ -4,10 +4,14 @@ namespace App\Services;
 use Illuminate\Http\Request;
 use App\Models\ClassGroup;
 use Illuminate\Support\Collection;
-use App\View\Components\Card;
+use App\Helpers\CardFactories\ClassGroupCardFactory;
 
 class ClassGroupService
 {
+    private $cardFactory;
+    public function __construct() {
+        $this->cardFactory = app(ClassGroupCardFactory::class);
+    }
     public function getById(int $id): ?ClassGroup
     {
         $classgroup = ClassGroup::where([
@@ -65,20 +69,7 @@ class ClassGroupService
     public function getClassGroupCards(string $search = ""): array
     {
         $classGroups = $this->getAll($search);
-
-        $cards[] = new Card(
-            "Add new",
-            "",
-            "/admin/classgroups/create",
-        );
-        foreach ($classGroups as $classGroup) {
-            $cards[] = new Card(
-                $classGroup->Name,
-                "",
-                "/admin/classgroups/edit/" . $classGroup->Id,
-                $classGroup->Id
-            );
-        }
+        $cards = $this->cardFactory->makeCards($classGroups, addNew: true);
         return $cards;
     }
 }

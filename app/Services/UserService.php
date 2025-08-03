@@ -66,7 +66,7 @@ class UserService
                 $adminCards[] = new Card(
                     $user->Name,
                     "admin",
-                    "/".$role."/admins/edit/" . $user->Id
+                    "/".$role."/admins/" . $user->Id
                 );
                 continue;
             }
@@ -74,7 +74,7 @@ class UserService
                 $studentCards[] = new Card(
                     $user->Name,
                     "student",
-                    "/".$role."/students/edit/" . $user->student->Id
+                    "/".$role."/students/" . $user->student->Id
                 );
                 continue;
             }
@@ -82,7 +82,7 @@ class UserService
                 $teacherCards[] = new Card(
                     $user->Name,
                     "teacher",
-                    "/".$role."/teachers/edit/" . $user->teacher->Id
+                    "/".$role."/teachers/" . $user->teacher->Id
                 );
             }
         }

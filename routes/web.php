@@ -60,32 +60,32 @@ Route::middleware(RoleAuthorizationMiddleware::class.":admin")->prefix('admin')-
     // subject CRUD views
     Route::get('/subjects', [AdminController::class, 'subjects'])->name('admin.subjects');
     Route::get('/subjects/create', [AdminController::class, 'createSubject'])->name('admin.subject.create');
-    Route::get('/subjects/edit/{id}', [AdminController::class, 'subjectDetails'])->name('admin.subject.edit');
+    Route::get('/subjects/{id}', [AdminController::class, 'subjectDetails'])->name('admin.subject.edit');
     
     // classgroups CRUD views
     Route::get('/classgroups', [AdminController::class, "classGroups"])->name('admin.classgroups');
     Route::get('/classgroups/create', [AdminController::class, "createClassGroup"])->name('admin.classgroup.create');
-    Route::get('/classgroups/edit/{id}', [AdminController::class, "classGroupDetails"])->name('admin.classgroup.edit');
+    Route::get('/classgroups/{id}', [AdminController::class, "classGroupDetails"])->name('admin.classgroup.edit');
 
     // classrooms CRUD views
     Route::get('/classrooms', [AdminController::class, "classrooms"])->name('admin.classrooms');
     Route::get('/classrooms/create', [AdminController::class, "createClassroom"])->name('admin.classroom.create');
-    Route::get('/classrooms/edit/{id}', [AdminController::class, "classroomDetails"])->name('admin.classroom.edit');
+    Route::get('/classrooms/{id}', [AdminController::class, "classroomDetails"])->name('admin.classroom.edit');
 
     // users CRUD views
     Route::get('/users', [AdminController::class, 'users'])->name('users');
 
     Route::get('/admins', [AdminController::class, "admins"])->name('admin.admins');
     Route::get('/admins/create', [AdminController::class, "createAdmin"])->name('admin.admins.create');
-    Route::get('/admins/edit/{id}', [AdminController::class, "adminDetails"])->name('admin.admin');
+    Route::get('/admins/{id}', [AdminController::class, "adminDetails"])->name('admin.admin');
 
     Route::get('/students', [AdminController::class, "students"])->name('admin.students');
     Route::get('/students/create', [AdminController::class, "createStudent"])->name('admin.student.create');
-    Route::get('/students/edit/{id}', [AdminController::class, "studentDetails"])->name('admin.student');
+    Route::get('/students/{id}', [AdminController::class, "studentDetails"])->name('admin.student');
 
     Route::get('/teachers', [AdminController::class, "teachers"])->name('admin.teachers');
     Route::get('/teachers/create', [AdminController::class, "createTeacher"])->name('admin.teacher.create');
-    Route::get('/teachers/edit/{id}', [AdminController::class, "teacherDetails"])->name('admin.teacher');
+    Route::get('/teachers/{id}', [AdminController::class, "teacherDetails"])->name('admin.teacher');
 
 });
 

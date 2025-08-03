@@ -4,10 +4,14 @@ namespace App\Services;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use App\View\Components\Card;
+use App\Helpers\CardFactories\SubjectCardFactory;
 
 class SubjectService
 {
+    private $cardFactory;
+    public function __construct() {
+        $this->cardFactory = app(SubjectCardFactory::class);
+    }
     public function getById(int $id): ?Subject
     {
         $subject = Subject::where([
@@ -111,32 +115,13 @@ class SubjectService
     public function getSubjectCards(string $search = ""): array
     {
         $subjects = $this->getAll($search);
-
-        $cards[] = new Card(
-            "Add new",
-            "",
-            "/admin/subjects/create"
-        );
-        foreach ($subjects as $subject) {
-            $cards[] = new Card(
-                $subject->Name,
-                "",
-                "/admin/subjects/edit/" . $subject->Id
-            );
-        }
+        $cards = $this->cardFactory->makeCards($subjects, addNew: true);
         return $cards;
     }
     public function getSubjectCardsByClassGroupId(int $classId, string $search = ""): array
     {
         $subjects = $this->getByClassGroupId($classId, $search);
-
-        foreach ($subjects as $subject) {
-            $cards[] = new Card(
-                $subject->Name,
-                "",
-                "/student/subjects/" . $subject->Id
-            );
-        }
+        $cards = $this->cardFactory->makeCards($subjects, addNew: false);
         return $cards ?? [];
     }
 }

@@ -5,5 +5,5 @@ use Illuminate\Support\Collection;
 
 abstract class CardFactory
 {
-    abstract public function makeCards(Collection $items, bool $addNew = false): array;
+    abstract public function makeCards(Collection $items): array;
 }
