@@ -2,11 +2,15 @@
 namespace App\Services;
 
 use App\Models\User;
-use App\View\Components\Card;
 use Illuminate\Support\Collection;
+use App\Helpers\CardFactories\UserCardFactory;
 
 class UserService
 {
+    private $cardFactory;
+    public function __construct() {
+        $this->cardFactory = app(UserCardFactory::class);
+    }
     public function getUserById(int $id): User
     {
         return User::with(['student', 'teacher'])->where([
@@ -37,55 +41,8 @@ class UserService
     }
     public function getUserCards(string $search = ""): array
     {
-        $role = auth()->user()->getRoleName();
         $users = $this->getUsers($search);
-
-        $adminCards = [
-            new Card(
-                "Add new",
-                "",
-                "/".$role."/admins/create"
-            )
-        ];
-        $studentCards = [
-            new Card(
-                "Add new",
-                "",
-                "/".$role."/students/create"
-            )
-        ];
-        $teacherCards = [
-            new Card(
-                "Add new",
-                "",
-                "/".$role."/teachers/create"
-            )
-        ];
-        foreach ($users as $user) {
-            if ($user->isAdmin()) {
-                $adminCards[] = new Card(
-                    $user->Name,
-                    "admin",
-                    "/".$role."/admins/" . $user->Id
-                );
-                continue;
-            }
-            if ($user->isStudent()) {
-                $studentCards[] = new Card(
-                    $user->Name,
-                    "student",
-                    "/".$role."/students/" . $user->student->Id
-                );
-                continue;
-            }
-            if ($user->isTeacher()) {
-                $teacherCards[] = new Card(
-                    $user->Name,
-                    "teacher",
-                    "/".$role."/teachers/" . $user->teacher->Id
-                );
-            }
-        }
-        return ["admins" => $adminCards, "students" => $studentCards, "teachers" => $teacherCards];
+        $cards = $this->cardFactory->makeCards($users, addNew: true);
+        return $cards;
     }
 }
